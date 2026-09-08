@@ -85,7 +85,6 @@ aws sts get-caller-identity
 1. Remote State
 This stack creates: S3 state bucket, S3 versioning, State encryption & DynamoDB lock table
 
-Commands:
 cd bootstrap
 terraform init
 terraform validate
@@ -93,4 +92,23 @@ terraform plan
 terraform apply
 
 2. Configure Backend
-   
+
+cd ../infrastructure
+terraform init -backend-config=backend.hcl
+
+3. Deploy Infrastructure
+terraform fmt -recursive
+terraform validate
+terraform plan -out=tfplan
+terraform apply tfplan
+
+4. Verify
+kubectl get nodes -o wide 
+kubectl get pods -A
+kubectl get nodes -L eks.amazonaws.com/capacityType
+kubectl describe serviceaccount app-service-account -n app
+kubectl exec -n app deployment/aws-cli-demo --aws sts get-caller-identity
+
+6. Destroy Infrastructure
+cd infrastructure
+terraform destroy
