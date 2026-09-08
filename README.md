@@ -82,19 +82,15 @@ aws sts get-caller-identity
 
 ## Deployment
 
-# 1. Remote State
-   This stack creates:
-       a. S3 state bucket
-       b. S3 versioning
-       c. State encryption
-       d. DynamoDB lock table
+1. Remote State
+This stack creates: S3 state bucket, S3 versioning, State encryption & DynamoDB lock table
 
-   Commands:
-   cd bootstrap
-   terraform init
-   terraform validate
-   terraform plan
-   terraform apply
-   
-3. Configure Backend
+Commands:
+cd bootstrap
+terraform init
+terraform validate
+terraform plan
+terraform apply
+
+2. Configure Backend
    
