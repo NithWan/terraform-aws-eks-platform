@@ -102,7 +102,7 @@ terraform init -backend-config=backend.hcl
 ```bash
 terraform fmt -recursive
 terraform validate
-terraform plan -out=tfplan
+terraform plan -out=tfplan/ terraform plan -var-file "../environments/dev/terraform.tfvars"
 terraform apply tfplan
 ```
 ### 4. Verify eks
