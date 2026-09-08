@@ -67,6 +67,7 @@ terraform-aws-eks-platform/
 | `scripts/`          | Commands/scripts used during the live demonstration.                                                    |
 
 ## Prerequisites
+
 Terraform >= 1.10
 AWS CLI v2
 kubectl
@@ -74,41 +75,46 @@ Git
 An AWS account with sufficient permissions
 
 Verify:
+```bash
 terraform version
 aws --version
 kubectl version --client
 git --version
 aws sts get-caller-identity
-
+```
 ## Deployment
 
-1. Remote State
+### 1. Remote State
 This stack creates: S3 state bucket, S3 versioning, State encryption & DynamoDB lock table
-
+```bash
 cd bootstrap
 terraform init
 terraform validate
 terraform plan
 terraform apply
-
-2. Configure Backend
-
+```
+### 2. Configure Backend
+```bash
 cd ../infrastructure
 terraform init -backend-config=backend.hcl
-
-3. Deploy Infrastructure
+```
+### 3. Deploy Infrastructure
+```bash
 terraform fmt -recursive
 terraform validate
 terraform plan -out=tfplan
 terraform apply tfplan
-
-4. Verify
+```
+### 4. Verify eks
+```bash
 kubectl get nodes -o wide 
 kubectl get pods -A
 kubectl get nodes -L eks.amazonaws.com/capacityType
 kubectl describe serviceaccount app-service-account -n app
 kubectl exec -n app deployment/aws-cli-demo --aws sts get-caller-identity
-
-6. Destroy Infrastructure
+```
+### 5. Destroy Infrastructure
+```bash
 cd infrastructure
 terraform destroy
+```
