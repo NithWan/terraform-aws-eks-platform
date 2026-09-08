@@ -1,4 +1,4 @@
-# terraform-aws-eks-platform
+## terraform-aws-eks-platform
 Production-style AWS EKS platform built with Terraform, featuring multi-AZ VPC networking, Spot worker nodes, IRSA, RDS MySQL, Secrets Manager, KMS-encrypted S3, and remote Terraform state management.
 
 ## Project Structure
@@ -66,3 +66,35 @@ terraform-aws-eks-platform/
 | `modules/storage/`  | KMS-encrypted S3 raw-data bucket.                                                                       |
 | `scripts/`          | Commands/scripts used during the live demonstration.                                                    |
 
+## Prerequisites
+Terraform >= 1.10
+AWS CLI v2
+kubectl
+Git
+An AWS account with sufficient permissions
+
+Verify:
+terraform version
+aws --version
+kubectl version --client
+git --version
+aws sts get-caller-identity
+
+## Deployment
+
+# 1. Remote State
+   This stack creates:
+       a. S3 state bucket
+       b. S3 versioning
+       c. State encryption
+       d. DynamoDB lock table
+
+   Commands:
+   cd bootstrap
+   terraform init
+   terraform validate
+   terraform plan
+   terraform apply
+   
+3. Configure Backend
+   
