@@ -110,10 +110,13 @@ terraform apply tfplan
 kubectl get nodes -o wide 
 kubectl get pods -A
 kubectl get nodes -L eks.amazonaws.com/capacityType
+```
+## 5. Verify IRSA
+```bash
 kubectl describe serviceaccount app-service-account -n app
 kubectl exec -n app deployment/aws-cli-demo --aws sts get-caller-identity
 ```
-### 5. Destroy Infrastructure
+### 6. Destroy Infrastructure
 ```bash
 cd infrastructure
 terraform destroy
