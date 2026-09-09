@@ -1,8 +1,6 @@
 resource "aws_db_subnet_group" "mysql" {
   name = "${var.project_name}-${var.environment}-mysql"
-
   subnet_ids = var.private_subnet_ids
-
   tags = {
     Name = "${var.project_name}-${var.environment}-mysql"
   }

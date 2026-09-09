@@ -148,7 +148,6 @@ resource "kubernetes_deployment_v1" "aws_cli_demo" {
 
       spec {
         service_account_name = kubernetes_service_account_v1.app.metadata[0].name
-
         container {
           name  = "aws-cli"
           image = "amazon/aws-cli:latest"
