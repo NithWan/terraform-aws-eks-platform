@@ -1,3 +1,31 @@
+resource "aws_iam_role" "vpc_cni" {
+  name = "${var.cluster_name}-vpc-cni-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "pods.eks.amazonaws.com"
+      }
+      Action = [
+        "sts:AssumeRole",
+        "sts:TagSession"
+      ]
+    }]
+  })
+
+  tags = {
+    Environment = var.environment
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "vpc_cni" {
+  role       = aws_iam_role.vpc_cni.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
+
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 21.0"
@@ -12,8 +40,37 @@ module "eks" {
   endpoint_private_access = true
 
   enable_irsa = true
-
+  
   enable_cluster_creator_admin_permissions = true
+
+  addons = {
+    eks-pod-identity-agent = {
+      before_compute = true
+      most_recent    = true
+    }
+
+    vpc-cni = {
+      before_compute = true
+      most_recent    = true
+
+      pod_identity_association = [{
+        role_arn        = aws_iam_role.vpc_cni.arn
+        service_account = "aws-node"
+      }]
+
+      resolve_conflicts_on_create = "OVERWRITE"
+      resolve_conflicts_on_update = "OVERWRITE"
+    }
+
+    kube-proxy = {
+      before_compute = true
+      most_recent    = true
+    }
+
+    coredns = {
+      most_recent = true
+    }
+  }
 
   eks_managed_node_groups = {
     spot_workers = {
@@ -40,4 +97,5 @@ module "eks" {
   tags = {
     Environment = var.environment
   }
+
 }

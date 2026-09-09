@@ -1,5 +1,5 @@
-bucket         = "demo-app-tf-state-dev-19544"
-key            = "app/dev/terraform.tfstate"
+bucket         = "terraform-state-lock-bucket-dev-22192"
+key            = "eks-platform/dev/terraform.tfstate"
 region         = "us-west-2"
-dynamodb_table = "tf-state-lock-dev"
+dynamodb_table = "terraform-state-lock-dev"
 encrypt        = true

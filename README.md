@@ -97,6 +97,7 @@ terraform apply
 ```bash
 cd ../infrastructure
 terraform init -backend-config=backend.hcl
+terraform init -reconfigure -backend-config="..\environments\dev\backend.hcl"
 ```
 ### 3. Deploy Infrastructure
 ```bash

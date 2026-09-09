@@ -6,6 +6,7 @@ variable "aws_region" {
 variable "state_bucket_name" {
   description = "Globally unique S3 bucket for Terraform state"
   type = string
+  default = "terraform-state-lock-bucket-dev-22192"
 }
 
 variable "lock_table_name" {
@@ -17,5 +18,5 @@ variable "lock_table_name" {
 variable "project_name" {
   description = "Project name"
   type        = string
-  default     = "tf-aws-eks-app"
+  default     = "terraform-aws-eks-platform"
 }
