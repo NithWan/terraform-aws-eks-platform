@@ -122,3 +122,19 @@ kubectl exec -n app deployment/aws-cli-demo --aws sts get-caller-identity
 cd infrastructure
 terraform destroy
 ```
+### 7. Flask App
+```bash
+docker build -t flask-app:v2 . 
+docker tag eks-sre-flask:v2 <YOUR-ECR-URL>:v2
+docker push <YOUR-ECR-URL>:v2
+```
+### 8. Helm
+```bash
+helm lint .\helm\flask-app
+helm install flask-app .\helm\flask-app `  --namespace app
+helm list -n app
+kubectl get pods -n app   
+kubectl get svc -n app
+curl <LB_ARN>  <a34761f66f66944c591c1ec2ddec25d0-1523501769.us-west-2.elb.amazonaws.com/>
+helm uninstall flask-app -n app
+```

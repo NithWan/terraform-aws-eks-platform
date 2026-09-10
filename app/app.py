@@ -33,26 +33,19 @@ def health():
 @app.route("/work")
 def work():
     n = request.args.get("n", default=100000, type=int)
-
     app.logger.info("CPU workload started n=%s", n)
-
     start = time.time()
-
     value = b"eks-sre-demo"
-
     for i in range(n):
         value = hashlib.sha256(
             value + str(i).encode()
         ).digest()
-
     duration = time.time() - start
-
     app.logger.info(
         "CPU workload completed n=%s duration=%.3f",
         n,
         duration
     )
-
     return jsonify(
         status="completed",
         iterations=n,
