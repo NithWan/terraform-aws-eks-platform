@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "assume_role" {
   statement {
     effect = "Allow"
@@ -80,6 +82,20 @@ data "aws_iam_policy_document" "app" {
 
     resources = [
       var.kms_key_arn
+    ]
+  }
+  statement {
+    sid    = "WriteFlaskLogsToCloudWatch"
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogStreams"
+    ]
+
+    resources = [
+      "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/eks/flask-app:*"
     ]
   }
 }

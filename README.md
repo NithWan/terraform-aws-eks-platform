@@ -138,3 +138,19 @@ kubectl get svc -n app
 curl <LB_ARN>  <a34761f66f66944c591c1ec2ddec25d0-1523501769.us-west-2.elb.amazonaws.com/>
 helm uninstall flask-app -n app
 ```
+
+### 9. Logs
+```bash
+kubectl logs -n app deployment/flask-app
+kubectl get pods -n app
+kubectl logs deployment/flask-app -n app -c flask-app --tail=50
+kubectl get deployment flask-app -n app -o jsonpath="{.spec.template.spec.containers[*].name}"
+kubectl logs deployment/flask-app -n app -c fluent-bit --tail=50
+kubectl get deployment flask-app -n app -o jsonpath="{.spec.template.spec.serviceAccountName}"
+kubectl get sa flask-app -n app -o yaml
+kubectl exec deployment/flask-app -n app -c fluent-bit -- env | Select-String "AWS_ROLE_ARN|AWS_WEB_IDENTITY"
+aws logs describe-log-streams --log-group-name /eks/flask-app --region us-west-2
+aws logs get-log-events --log-group-name /eks/flask-app --log-stream-name flask-flask.app --region us-west-2
+kubectl logs deployment/flask-app -n app -c fluent-bit --since=5m
+aws logs tail /eks/flask-app --follow --region us-west-2
+aws logs tail /eks/flask-app --since 5m --region us-west-2

@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: 590183658640.dkr.ecr.us-west-2.amazonaws.com/eks-flask-app
-  tag: 2
+  tag: v2
   pullPolicy: IfNotPresent
 
 serviceAccount:
@@ -34,3 +34,20 @@ probes:
   path: /health
   initialDelaySeconds: 10
   periodSeconds: 10
+
+fluentBit:
+  image: public.ecr.aws/aws-observability/aws-for-fluent-bit:latest
+
+  logGroup: /eks/flask-app
+  logStreamPrefix: flask-
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+aws:
+  region: us-west-2

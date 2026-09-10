@@ -63,6 +63,7 @@ module "database" {
 module "irsa" {
   source = "./modules/irsa"
 
+  aws_region = var.aws_region
   project_name = var.project_name
   environment  = var.environment
 

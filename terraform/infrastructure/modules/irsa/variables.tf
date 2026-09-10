@@ -29,3 +29,7 @@ variable "bucket_arn" {
 variable "kms_key_arn" {
   type = string
 }
+
+variable "aws_region" {
+  type = string
+}
