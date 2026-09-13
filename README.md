@@ -154,3 +154,20 @@ aws logs get-log-events --log-group-name /eks/flask-app --log-stream-name flask-
 kubectl logs deployment/flask-app -n app -c fluent-bit --since=5m
 aws logs tail /eks/flask-app --follow --region us-west-2
 aws logs tail /eks/flask-app --since 5m --region us-west-2
+```
+
+### 10. Metric Server
+```bash
+helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+helm repo update
+helm upgrade --install metrics-server metrics-server/metrics-server `  --namespace kube-system
+kubectl get pods -n kube-system | Select-String metrics-server
+```
+
+### 10. HPA
+```bash
+kubectl get hpa -n app
+kubectl describe hpa flask-app -n app  
+kubectl get hpa -n app -w 
+hey -z 5m -c 100 "http://<LB-DNS>/work?n=200000"
+```
