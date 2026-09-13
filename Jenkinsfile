@@ -106,7 +106,10 @@ pipeline {
             when {
                 allOf {
                     expression { params.ACTION == 'destroy' }
-                    expression { env.BRANCH_NAME?.startsWith('feature/') }
+                    expression {
+                        env.BRANCH_NAME == 'feature' ||
+                        env.BRANCH_NAME?.startsWith('feature/')
+                    }
                 }
             }
             steps {
@@ -121,7 +124,10 @@ pipeline {
             when {
                 allOf {
                     expression { params.ACTION == 'rollback' }
-                    expression { env.BRANCH_NAME?.startsWith('feature/') }
+                    expression {
+                        env.BRANCH_NAME == 'feature' ||
+                        env.BRANCH_NAME?.startsWith('feature/')
+                    }
                 }
             }
             steps {
