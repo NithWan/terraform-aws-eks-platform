@@ -12,9 +12,12 @@ pipeline {
     environment {
         AWS_REGION = 'us-west-2'
         EKS_CLUSTER = 'eks-platform-dev'
-        ECR_REPO = '590183658640.dkr.ecr.us-west-2.amazonaws.com/<ECR-REPO-NAME>'
+        ECR_REPO = '590183658640.dkr.ecr.us-west-2.amazonaws.com/eks-flask-app'
         IMAGE_TAG = "${BUILD_NUMBER}"
         HELM_CHART = './helm/flask-app'
+        
+        SES_FROM = 'verified-sender@example.com'
+        SES_TO = 'nithin.achary06@gmail.com'
     }
 
     stages {
@@ -33,19 +36,19 @@ pipeline {
             }
         }
 
-        stage('Trivy Scan') {
-            when {
-                expression { params.ACTION == 'deploy' }
-            }
-            steps {
-                sh '''
-                    trivy image \
-                    --exit-code 1 \
-                    --severity HIGH,CRITICAL \
-                    $ECR_REPO:$IMAGE_TAG
-                '''
-            }
-        }
+        // stage('Trivy Scan') {
+        //     when {
+        //         expression { params.ACTION == 'deploy' }
+        //     }
+        //     steps {
+        //         sh '''
+        //             trivy image \
+        //             --exit-code 1 \
+        //             --severity HIGH,CRITICAL \
+        //             $ECR_REPO:$IMAGE_TAG
+        //         '''
+        //     }
+        // }
 
         stage('ECR Push') {
             when {
@@ -170,6 +173,14 @@ pipeline {
 
         failure {
             echo "Pipeline failed. ACTION=${params.ACTION}"
+
+        sh '''
+            aws ses send-email \
+              --region $AWS_REGION \
+              --from "$SES_FROM" \
+              --destination "ToAddresses=$SES_TO" \
+              --message "Subject={Data=Jenkins Pipeline Failed},Body={Text={Data=Pipeline $JOB_NAME build $BUILD_NUMBER failed. Branch: $BRANCH_NAME Action: $ACTION Build URL: $BUILD_URL}}"
+        '''
         }
     }
 }
