@@ -16,8 +16,8 @@ pipeline {
         IMAGE_TAG = "${BUILD_NUMBER}"
         HELM_CHART = './helm/flask-app'
         
-        SES_FROM = 'verified-sender@example.com'
-        SES_TO = 'nithin.achary06@gmail.com'
+        SES_FROM = 'nithin.achary06@gmail.com'
+        SES_TO = 'motog95666@94an.com'
     }
 
     stages {
