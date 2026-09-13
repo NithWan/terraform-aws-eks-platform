@@ -172,3 +172,47 @@ kubectl get hpa -n app -w
 hey -z 5m -c 100 "http://<LB-DNS>/work?n=200000"
 ```
 
+### 11. RBAC
+```bash
+aws eks create-access-entry --cluster-name eks-platform-dev --principal-arn arn:aws:iam::590183658640:role eks-platform-jenkins-role --type STANDARD --kubernetes-groups jenkins-deployer --region us-west-2
+kubectl apply -f jenkins-rbac.yaml
+aws eks update-kubeconfig --region us-west-2 --name eks-platform-dev
+kubectl get role,rolebinding -n app
+kubectl get pods -n app
+```
+
+### 12. Post Deplloyment Checks
+Verify application + Fluent Bit:
+```bash
+helm list -n app
+kubectl get pods -n app
+kubectl get pods -n app -o jsonpath="{range .items[*]}{.metadata.name}{': '}{range .spec.containers[*]}{.name}{' '}{end}{'\n'}{end}"
+kubectl get deployment flask-app -n app -o=jsonpath='{.spec.template.spec.containers[0].image}'
+kubectl rollout status deployment/flask-app -n app
+```
+Resource allocation: 
+```bash
+kubectl top pods -n app --containers
+Verify probes:
+kubectl describe deployment flask-app -n app
+```
+Verify CloudWatch logging:
+```bash
+kubectl logs -n app deployment/flask-app -c fluent-bit --tail=30
+kubectl get svc -n app
+curl http://<LB-DNS>/health
+```
+Verify Metrics Server
+```bash
+kubectl get deployment metrics-server -n kube-system
+```
+Verify HPA
+```bash
+kubectl get hpa -n app
+kubectl describe hpa flask-app -n app
+```
+HPA scalability
+```bash
+kubectl get hpa,pods -n app -w
+hey -z 5m -c 100 "http://<LB-DNS>/work?n=200000"
+```
