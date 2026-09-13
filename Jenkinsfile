@@ -4,8 +4,13 @@ pipeline {
     parameters {
         choice(
             name: 'ACTION',
-            choices: ['deploy', 'destroy'],
-            description: 'Deploy or destroy application'
+            choices: ['deploy', 'destroy', 'rollback'],
+            description: 'Deploy, destroy, or rollback application'
+        )
+        string(
+            name: 'ROLLBACK_REVISION',
+            defaultValue: '1',
+            description: 'Helm revision number for rollback'
         )
     }
 
@@ -112,6 +117,28 @@ pipeline {
             }
         }
 
+        stage('Rollback DEV') {
+            when {
+                allOf {
+                    expression { params.ACTION == 'rollback' }
+                    expression { env.BRANCH_NAME?.startsWith('feature/') }
+                }
+            }
+            steps {
+                sh '''
+                    helm history flask-app-dev -n app
+
+                    helm rollback flask-app-dev \
+                    $ROLLBACK_REVISION \
+                    -n app
+
+                    kubectl rollout status deployment/flask-app-dev \
+                    -n app \
+                    --timeout=180s
+                '''
+            }
+        }
+
         stage('Prod Approval') {
             when {
                 allOf {
@@ -164,6 +191,41 @@ pipeline {
                 sh '''
                     helm uninstall flask-app-prod \
                     --namespace app || true
+                '''
+            }
+        }
+
+        stage('Prod Rollback Approval') {
+            when {
+                allOf {
+                    expression { params.ACTION == 'rollback' }
+                    branch 'main'
+                }
+            }
+            steps {
+                input message: "Rollback PROD to revision ${params.ROLLBACK_REVISION}?",
+                    ok: 'Rollback'
+            }
+        }
+
+        stage('Rollback PROD') {
+            when {
+                allOf {
+                    expression { params.ACTION == 'rollback' }
+                    branch 'main'
+                }
+            }
+            steps {
+                sh '''
+                    helm history flask-app-prod -n app
+
+                    helm rollback flask-app-prod \
+                    $ROLLBACK_REVISION \
+                    -n app
+
+                    kubectl rollout status deployment/flask-app-prod \
+                    -n app \
+                    --timeout=180s
                 '''
             }
         }
