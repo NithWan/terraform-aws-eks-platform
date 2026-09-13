@@ -114,7 +114,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    helm uninstall flask-app-dev \
+                    helm uninstall flask-app \
                     --namespace app || true
                 '''
             }
@@ -132,13 +132,13 @@ pipeline {
             }
             steps {
                 sh '''
-                    helm history flask-app-dev -n app
+                    helm history flask-app -n app
 
-                    helm rollback flask-app-dev \
+                    helm rollback flask-app \
                     $ROLLBACK_REVISION \
                     -n app
 
-                    kubectl rollout status deployment/flask-app-dev \
+                    kubectl rollout status deployment/flask-app \
                     -n app \
                     --timeout=180s
                 '''
@@ -195,7 +195,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    helm uninstall flask-app-prod \
+                    helm uninstall flask-app \
                     --namespace app || true
                 '''
             }
@@ -223,13 +223,13 @@ pipeline {
             }
             steps {
                 sh '''
-                    helm history flask-app-prod -n app
+                    helm history flask-app -n app
 
-                    helm rollback flask-app-prod \
+                    helm rollback flask-app \
                     $ROLLBACK_REVISION \
                     -n app
 
-                    kubectl rollout status deployment/flask-app-prod \
+                    kubectl rollout status deployment/flask-app \
                     -n app \
                     --timeout=180s
                 '''
