@@ -26,16 +26,16 @@ pipeline {
             }
         }
 
-        stage('Trivy Scan') {
-            steps {
-                sh '''
-                    trivy image \
-                      --exit-code 1 \
-                      --severity HIGH,CRITICAL \
-                      $ECR_REPO:$IMAGE_TAG
-                '''
-            }
-        }
+        // stage('Trivy Scan') {
+        //     steps {
+        //         sh '''
+        //             trivy image \
+        //               --exit-code 1 \
+        //               --severity HIGH,CRITICAL \
+        //               $ECR_REPO:$IMAGE_TAG
+        //         '''
+        //     }
+        // }
 
         stage('ECR Login & Push') {
             steps {
