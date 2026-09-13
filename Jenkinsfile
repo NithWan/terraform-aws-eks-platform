@@ -89,7 +89,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    helm upgrade --install flask-app-dev $HELM_CHART \
+                    helm upgrade --install flask-app $HELM_CHART \
                     --namespace app \
                     --set image.repository=$ECR_REPO \
                     --set image.tag=$IMAGE_TAG
@@ -133,7 +133,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    helm upgrade --install flask-app-prod $HELM_CHART \
+                    helm upgrade --install flask-app $HELM_CHART \
                     --namespace app \
                     --set image.repository=$ECR_REPO \
                     --set image.tag=$IMAGE_TAG
