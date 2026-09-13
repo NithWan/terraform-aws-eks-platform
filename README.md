@@ -171,3 +171,4 @@ kubectl describe hpa flask-app -n app
 kubectl get hpa -n app -w 
 hey -z 5m -c 100 "http://<LB-DNS>/work?n=200000"
 ```
+

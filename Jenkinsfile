@@ -81,7 +81,10 @@ pipeline {
             when {
                 allOf {
                     expression { params.ACTION == 'deploy' }
-                    expression { env.BRANCH_NAME?.startsWith('feature/') }
+                    expression {
+                        env.BRANCH_NAME == 'feature' ||
+                        env.BRANCH_NAME?.startsWith('feature/')
+                    }
                 }
             }
             steps {
