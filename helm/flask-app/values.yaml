@@ -10,9 +10,6 @@ serviceAccount:
   name: app-service-account
   roleArn: ""
 
-# Name of a Kubernetes Secret (created by Terraform) that contains
-# database credentials as environment variables (DB_HOST, DB_PORT,
-# DB_NAME, DB_USERNAME, DB_PASSWORD). Leave empty to disable.
 databaseSecretName: database-credentials
 
 service:
@@ -39,7 +36,7 @@ fluentBit:
   image: public.ecr.aws/aws-observability/aws-for-fluent-bit:latest
 
   logGroup: /eks/flask-app
-  logStreamPrefix: flask-
+  logStreamPrefix: flask-app
 
   resources:
     requests:
@@ -58,7 +55,7 @@ autoscaling:
   maxReplicas: 10
 
   cpu:
-    enabled: false
+    enabled: true
     targetUtilizationPercentage: 50
 
   memory:

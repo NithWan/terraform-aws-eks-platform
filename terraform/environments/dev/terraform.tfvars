@@ -15,11 +15,11 @@ private_subnet_cidrs = [
   "10.10.12.0/24"
 ]
 
-node_instance_types = ["t3.medium"]
+node_instance_types = ["t3.large"]
 
-node_min_size     = 2
-node_desired_size = 2
-node_max_size     = 2
+node_min_size     = 3
+node_desired_size = 3
+node_max_size     = 3
 
 single_nat_gateway = true
 

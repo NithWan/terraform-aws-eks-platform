@@ -1,0 +1,12 @@
+grafana:
+  enabled: false
+
+alertmanager:
+  enabled: false
+
+prometheus:
+  prometheusSpec:
+    retention: 2d
+
+nodeSelector:
+  app: prometheus

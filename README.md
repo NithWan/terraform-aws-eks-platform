@@ -96,7 +96,7 @@ terraform apply
 ### 2. Configure Backend
 ```bash
 cd ../infrastructure
-terraform init -backend-config=backend.hcl
+terraform init -backend-config=..\environments\dev\backend.hcl
 terraform init -reconfigure -backend-config="..\environments\dev\backend.hcl"
 ```
 ### 3. Deploy Infrastructure
@@ -115,7 +115,6 @@ kubectl get nodes -L eks.amazonaws.com/capacityType
 ## 5. Verify IRSA
 ```bash
 kubectl describe serviceaccount app-service-account -n app
-kubectl exec -n app deployment/aws-cli-demo --aws sts get-caller-identity
 ```
 ### 6. Destroy Infrastructure
 ```bash
@@ -141,6 +140,7 @@ helm uninstall flask-app -n app
 
 ### 9. Logs
 ```bash
+aws eks update-kubeconfig --region us-west-2  --name eks-platform-dev
 kubectl logs -n app deployment/flask-app
 kubectl get pods -n app
 kubectl logs deployment/flask-app -n app -c flask-app --tail=50
@@ -174,7 +174,10 @@ hey -z 5m -c 100 "http://<LB-DNS>/work?n=200000"
 
 ### 11. RBAC
 ```bash
-aws eks create-access-entry --cluster-name eks-platform-dev --principal-arn arn:aws:iam::590183658640:role eks-platform-jenkins-role --type STANDARD --kubernetes-groups jenkins-deployer --region us-west-2
+aws eks create-access-entry  --cluster-name eks-platform-dev --principal-arn arn:aws:iam::590183658640:role/eks-platform-jenkins-role  --region us-west-2
+aws eks associate-access-policy  --cluster-name eks-platform-dev --principal-arn arn:aws:iam::590183658640:role/eks-platform-jenkins-role  --policy-arn arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy  --access-scope type=cluster  --region us-west-2
+
+aws eks create-access-entry --cluster-name eks-platform-dev --principal-arn arn:aws:iam::590183658640:role/eks-platform-jenkins-role --type STANDARD --kubernetes-groups jenkins-deployer --region us-west-2
 kubectl apply -f jenkins-rbac.yaml
 aws eks update-kubeconfig --region us-west-2 --name eks-platform-dev
 kubectl get role,rolebinding -n app
@@ -193,12 +196,15 @@ kubectl rollout status deployment/flask-app -n app
 Resource allocation: 
 ```bash
 kubectl top pods -n app --containers
+```
 Verify probes:
+```bash
 kubectl describe deployment flask-app -n app
 ```
 Verify CloudWatch logging:
 ```bash
 kubectl logs -n app deployment/flask-app -c fluent-bit --tail=30
+kubectl get endpoints -n app
 kubectl get svc -n app
 curl http://<LB-DNS>/health
 ```
@@ -215,4 +221,14 @@ HPA scalability
 ```bash
 kubectl get hpa,pods -n app -w
 hey -z 5m -c 100 "http://<LB-DNS>/work?n=200000"
+```
+
+### 12. Obervability
+```bash
+kubectl create namespace monitoring
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm upgrade --install prometheus prometheus-community/kube-prometheus-stack  -n monitoring  -f .\observability\prometheus-values.yaml
+kubectl get pods -n monitoring
 ```

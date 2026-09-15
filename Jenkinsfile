@@ -82,6 +82,36 @@ pipeline {
             }
         }
 
+        stage('Ensure Metrics Server') {
+            steps {
+                sh '''
+                    READY=$(kubectl get deployment metrics-server \
+                        -n kube-system \
+                        -o jsonpath='{.status.availableReplicas}' 2>/dev/null || echo "0")
+
+                    if [ "$READY" -ge 1 ] 2>/dev/null; then
+                        echo "Metrics Server is already running. Skipping installation."
+                    else
+                        echo "Metrics Server is not running. Installing/updating..."
+
+                        helm repo add metrics-server \
+                            https://kubernetes-sigs.github.io/metrics-server/ || true
+
+                        helm repo update
+
+                        helm upgrade --install metrics-server \
+                            metrics-server/metrics-server \
+                            --namespace kube-system \
+                            -f helm/metrics-server/values.yaml
+
+                        kubectl rollout status deployment/metrics-server \
+                            -n kube-system \
+                            --timeout=120s
+                    fi
+                '''
+            }
+        }
+
         stage('Deploy DEV') {
             when {
                 allOf {

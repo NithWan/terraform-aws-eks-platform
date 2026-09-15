@@ -7,9 +7,16 @@ from prometheus_flask_exporter import PrometheusMetrics
 
 app = Flask(__name__)
 
+log_path = "/var/log/flask/app.log"
+os.makedirs(os.path.dirname(log_path), exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s"
+    format="%(asctime)s %(levelname)s %(message)s",
+    handlers=[
+        logging.FileHandler(log_path),
+        logging.StreamHandler()
+    ]
 )
 
 metrics = PrometheusMetrics(app)
